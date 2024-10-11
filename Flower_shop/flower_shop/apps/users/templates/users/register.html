@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Регистрация</h2>
+
+    <!-- Секция для отображения сообщений -->
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Форма регистрации -->
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Вывод ошибок формы -->
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for field in form %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <!-- Рендер формы -->
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+    </form>
+</div>
+{% endblock %}

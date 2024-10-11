@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="alert alert-success" role="alert">
+        Вы вышли из системы.
+        <a href="{% url 'login' %}" class="alert-link">Войти снова</a>
+    </div>
+{% endblock %}
