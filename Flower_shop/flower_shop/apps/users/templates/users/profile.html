@@ -20,6 +20,13 @@
 
 
         <a href="?edit=true" class="btn btn-secondary">Изменить</a>
+
+    <hr>
+
+        <a href="{% url 'logout' %}" class="btn btn-danger">Выйти из аккаунта</a>
+
+
+
     {% endif %}
 
     {% if messages %}

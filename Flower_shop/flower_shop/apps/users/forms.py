@@ -4,11 +4,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .models import Profile
 
-
 # Форма регистрации
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     nickname = forms.CharField(max_length=100, required=True, label="Никнейм")
+
     class Meta:
         model = User
         fields = ['nickname', 'email', 'password1', 'password2']
@@ -26,7 +26,6 @@ class CustomUserCreationForm(UserCreationForm):
             user.save()
         return user
 
-
 # Форма входа
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(label="Логин или Email")
@@ -40,13 +39,13 @@ class CustomAuthenticationForm(AuthenticationForm):
             raise forms.ValidationError("Неправильный логин или пароль.")
         return self.cleaned_data
 
-
-
+# Форма профиля
 class UserProfileForm(forms.ModelForm):
     first_name = forms.CharField(max_length=30, required=True, label='Имя')
     last_name = forms.CharField(max_length=30, required=True, label='Фамилия')
     email = forms.EmailField(required=True, label='Email')
-    User = forms.ModelChoiceField(queryset=User.objects.all(), widget=forms.HiddenInput())
+    nickname = forms.CharField(max_length=30, required=True, label='Логин')
+    nickname_tg = forms.CharField(max_length=30, required=True, label='Логин в Телеграм')
 
     class Meta:
         model = Profile
@@ -58,7 +57,6 @@ class UserProfileForm(forms.ModelForm):
             years=range(1950, 2025),
             empty_label=("Год", "Месяц", "День")
         )
-        self.fields['birth_date'].input_formats = ['%d.%m.%Y']
 
     def save(self, commit=True):
         user = self.instance.user
