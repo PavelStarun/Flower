@@ -2,39 +2,65 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Профиль</h2>
+    <h2>Личный кабинет</h2>
 
     {% if is_editing %}
-        <form method="post">
+        <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
+
+            <!-- Поле Логин -->
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Логин</label>
+                <input type="text" name="username" class="form-control" id="id_username" value="{{ user.username }}" style="background-color: #e0f7fa; width: 250px;" autocomplete="new-password">
+            </div>
+
+            <!-- Поле Имя -->
+            <div class="mb-3">
+                <label for="id_first_name" class="form-label">Имя</label>
+                <input type="text" name="first_name" class="form-control" id="id_first_name" value="{{ user.first_name }}" style="background-color: #e0f7fa; width: 250px;">
+            </div>
+
+            <!-- Поле Фамилия -->
+            <div class="mb-3">
+                <label for="id_last_name" class="form-label">Фамилия</label>
+                <input type="text" name="last_name" class="form-control" id="id_last_name" value="{{ user.last_name }}" style="background-color: #e0f7fa; width: 250px;">
+            </div>
+
+            <!-- Поле Никнейм в Telegram -->
+            <div class="mb-3">
+                <label for="id_telegram_nickname" class="form-label">Никнейм в Telegram</label>
+                <input type="text" name="telegram_nickname" class="form-control" id="id_telegram_nickname" value="{{ user.profile.telegram_nickname }}" style="background-color: #e0f7fa; width: 250px;">
+            </div>
+
+            <!-- Поле Дата рождения -->
+            <div class="mb-3">
+                <label for="id_birth_date" class="form-label">Дата рождения</label>
+                <input type="date" name="birth_date" class="form-control" id="id_birth_date" value="{{ user.profile.birth_date }}" style="background-color: #e0f7fa; width: 250px;">
+            </div>
+
+            <!-- Поле Email -->
+            <div class="mb-3">
+                <label for="id_email" class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" id="id_email" value="{{ user.email }}" style="background-color: #e0f7fa; width: 250px;">
+            </div>
+
             <button type="submit" class="btn btn-primary">Сохранить изменения</button>
         </form>
     {% else %}
-        <p><strong>Никнейм:</strong> {{ user.profile.nickname }}</p>
+        <p><strong>Логин:</strong> {{ user.username }}</p>
         <p><strong>Имя:</strong> {{ user.first_name }}</p>
         <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
-        <p><strong>Никнейм в телеграм:</strong> {{ user.profile.nickname }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Никнейм в Telegram:</strong> {{ user.profile.telegram_nickname }}</p>
         <p><strong>Дата рождения:</strong> {{ user.profile.birth_date|date:"d.m.Y" }}</p>
-
+        <p><strong>Email:</strong> {{ user.email }}</p>
 
         <a href="?edit=true" class="btn btn-secondary">Изменить</a>
+    {% endif %}
 
     <hr>
-
-        <a href="{% url 'logout' %}" class="btn btn-danger">Выйти из аккаунта</a>
-
-
-
-    {% endif %}
-
-    {% if messages %}
-      <div class="alert alert-success mt-3">
-        {% for message in messages %}
-          <p>{{ message }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Выйти из аккаунта</button>
+    </form>
 </div>
 {% endblock %}

@@ -1,49 +1,70 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
 <div class="container">
     <h2>Регистрация</h2>
 
-    <!-- Секция для отображения сообщений -->
-    {% if messages %}
-        <div>
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
     <!-- Форма регистрации -->
-    <form method="POST">
+    <form method="POST" autocomplete="off">
         {% csrf_token %}
 
-        <!-- Вывод ошибок формы -->
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                <ul>
-                    {% for field in form %}
-                        {% if field.errors %}
-                            {% for error in field.errors %}
-                                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-                            {% endfor %}
-                        {% endif %}
-                    {% endfor %}
+        <!-- Поле Логин -->
+        <div class="mb-3">
+            <label for="id_username" class="form-label">Логин</label>
+            <input type="text" name="username" class="form-control" id="id_username" style="background-color: #e0f7fa; width: 250px;" autocomplete="new-password">
+        </div>
 
-                    {% if form.non_field_errors %}
-                        {% for error in form.non_field_errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    {% endif %}
-                </ul>
+        <!-- Поле Пароль с глазиком -->
+        <div class="mb-3">
+            <label for="id_password1" class="form-label">Пароль</label>
+            <div class="input-group" style="width: 250px;">
+                <input type="password" name="password1" class="form-control" id="id_password1" style="background-color: #e0f7fa;" autocomplete="new-password">
+                <button type="button" class="btn btn-outline-secondary" id="togglePassword1">
+                    <i class="fa fa-eye"></i>
+                </button>
             </div>
-        {% endif %}
+        </div>
 
-        <!-- Рендер формы -->
-        {{ form.as_p }}
+        <!-- Поле Повторите пароль с глазиком -->
+        <div class="mb-3">
+            <label for="id_password2" class="form-label">Повторите пароль</label>
+            <div class="input-group" style="width: 250px;">
+                <input type="password" name="password2" class="form-control" id="id_password2" style="background-color: #e0f7fa;" autocomplete="new-password">
+                <button type="button" class="btn btn-outline-secondary" id="togglePassword2">
+                    <i class="fa fa-eye"></i>
+                </button>
+            </div>
+        </div>
 
         <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
     </form>
 </div>
+
+<!-- Скрипт для глазиков -->
+<script>
+    const togglePassword1 = document.getElementById('togglePassword1');
+    const passwordField1 = document.getElementById('id_password1');
+    const togglePassword2 = document.getElementById('togglePassword2');
+    const passwordField2 = document.getElementById('id_password2');
+
+    togglePassword1.addEventListener('click', function () {
+        if (passwordField1.type === 'password') {
+            passwordField1.type = 'text';
+            togglePassword1.innerHTML = '<i class="fa fa-eye-slash"></i>';
+        } else {
+            passwordField1.type = 'password';
+            togglePassword1.innerHTML = '<i class="fa fa-eye"></i>';
+        }
+    });
+
+    togglePassword2.addEventListener('click', function () {
+        if (passwordField2.type === 'password') {
+            passwordField2.type = 'text';
+            togglePassword2.innerHTML = '<i class="fa fa-eye-slash"></i>';
+        } else {
+            passwordField2.type = 'password';
+            togglePassword2.innerHTML = '<i class="fa fa-eye"></i>';
+        }
+    });
+</script>
 {% endblock %}

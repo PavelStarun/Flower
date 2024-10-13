@@ -1,15 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Вход в аккаунт</h2>
+<div class="container">
+    <h2>Вход</h2>
 
-    <form method="post">
+    <!-- Форма входа -->
+    <form method="POST" autocomplete="off">
         {% csrf_token %}
-        {{ form.as_p }}
+
+        <!-- Поле Логин -->
+        <div class="mb-3">
+            <label for="id_username" class="form-label">Логин</label>
+            <input type="text" name="username" class="form-control" id="id_username" style="background-color: #e0f7fa; width: 250px;" autocomplete="new-password">
+        </div>
+
+        <!-- Поле Пароль с глазиком -->
+        <div class="mb-3">
+            <label for="id_password" class="form-label">Пароль</label>
+            <div class="input-group" style="width: 250px;">
+                <input type="password" name="password" class="form-control" id="id_password" style="background-color: #e0f7fa;" autocomplete="new-password">
+                <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                    <i class="fa fa-eye"></i>
+                </button>
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary">Войти</button>
     </form>
-
-    <p>Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться здесь</a>.</p>
 </div>
+
+<!-- Скрипт для глазика -->
+<script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordField = document.getElementById('id_password');
+
+    togglePassword.addEventListener('click', function () {
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            togglePassword.innerHTML = '<i class="fa fa-eye-slash"></i>';
+        } else {
+            passwordField.type = 'password';
+            togglePassword.innerHTML = '<i class="fa fa-eye"></i>';
+        }
+    });
+</script>
 {% endblock %}

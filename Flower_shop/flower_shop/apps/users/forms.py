@@ -1,62 +1,74 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
 from .models import Profile
+from django.core.exceptions import ValidationError
+from django.core.validators import MinLengthValidator
 
-# Форма регистрации
+
 class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    nickname = forms.CharField(max_length=100, required=True, label="Никнейм")
+    username = forms.CharField(
+        label="Логин",
+        min_length=3,
+        max_length=30,
+        required=True,
+        validators=[MinLengthValidator(3)],
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'autocomplete': 'off',
+            'placeholder': 'Введите логин',
+            'style': 'width: 250px;',  # Установка ширины логина
+        }),
+    )
+    password1 = forms.CharField(
+        label="Пароль",
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'autocomplete': 'off',
+            'placeholder': 'Введите пароль',
+            'style': 'width: 250px;',  # Установка ширины пароля
+        }),
+    )
+    password2 = forms.CharField(
+        label="Повторите пароль",
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'autocomplete': 'off',
+            'placeholder': 'Повторите пароль',
+            'style': 'width: 250px;',  # Установка ширины подтверждения пароля
+        }),
+    )
 
     class Meta:
         model = User
-        fields = ['nickname', 'email', 'password1', 'password2']
+        fields = ['username', 'password1', 'password2']
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError('Email уже используется.')
-        return email
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.username = self.cleaned_data['nickname']
-        if commit:
-            user.save()
-        return user
-
-# Форма входа
-class CustomAuthenticationForm(AuthenticationForm):
-    username = forms.CharField(label="Логин или Email")
-
-    def clean(self):
+    def clean_username(self):
         username = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
-        user = authenticate(username=username, password=password)
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("Пользователь с таким логином уже существует.")
+        return username
 
-        if not user:
-            raise forms.ValidationError("Неправильный логин или пароль.")
-        return self.cleaned_data
+class CustomAuthenticationForm(AuthenticationForm):
+    username = forms.CharField(
+        label="Логин",
+        widget=forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'})
+    )
+    password = forms.CharField(
+        label="Пароль",
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'off'})
+    )
 
-# Форма профиля
 class UserProfileForm(forms.ModelForm):
-    first_name = forms.CharField(max_length=30, required=True, label='Имя')
-    last_name = forms.CharField(max_length=30, required=True, label='Фамилия')
-    email = forms.EmailField(required=True, label='Email')
-    nickname = forms.CharField(max_length=30, required=True, label='Логин')
-    nickname_tg = forms.CharField(max_length=30, required=True, label='Логин в Телеграм')
+    first_name = forms.CharField(max_length=30, required=True, label='Имя', widget=forms.TextInput(attrs={'class': 'form-control', 'style': 'background-color: #e6f7ff;'}))
+    last_name = forms.CharField(max_length=30, required=True, label='Фамилия', widget=forms.TextInput(attrs={'class': 'form-control', 'style': 'background-color: #e6f7ff;'}))
+    telegram_nickname = forms.CharField(max_length=50, required=False, label='Никнейм в Telegram', widget=forms.TextInput(attrs={'class': 'form-control', 'style': 'background-color: #e6f7ff;'}))
+    birth_date = forms.DateField(label='Дата рождения', widget=forms.SelectDateWidget(years=range(1950, 2025), attrs={'class': 'form-control', 'style': 'background-color: #e6f7ff;'}))
+    email = forms.EmailField(required=True, label='Email', widget=forms.EmailInput(attrs={'class': 'form-control', 'style': 'background-color: #e6f7ff;'}))
 
     class Meta:
         model = Profile
-        fields = ['birth_date']
-
-    def __init__(self, *args, **kwargs):
-        super(UserProfileForm, self).__init__(*args, **kwargs)
-        self.fields['birth_date'].widget = forms.SelectDateWidget(
-            years=range(1950, 2025),
-            empty_label=("Год", "Месяц", "День")
-        )
+        fields = ['first_name', 'last_name', 'telegram_nickname', 'birth_date', 'email']
 
     def save(self, commit=True):
         user = self.instance.user
@@ -65,4 +77,4 @@ class UserProfileForm(forms.ModelForm):
         user.email = self.cleaned_data['email']
         if commit:
             user.save()
-        return super(UserProfileForm, self).save(commit=commit)
+        return super().save(commit=commit)
