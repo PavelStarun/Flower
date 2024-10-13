@@ -11,8 +11,12 @@
         .alert-custom {
             background-color: #e0f7fa;
             color: #007bff;
-            width: 50%; /* Сокращаем ширину блока */
-            margin: 0 auto; /* Центрируем блок */
+            width: 100%; /* Ширина блока */
+        }
+        .alert-danger-custom {
+            background-color: #f8d7da;
+            color: #721c24;
+            width: 100%; /* Ширина блока */
         }
     </style>
 </head>
@@ -40,12 +44,33 @@
     </nav>
 
     <div class="container">
-        <!-- Вывод сообщений -->
+        <!-- Вывод сообщений об успешных действиях -->
         {% if messages %}
             <div class="alert alert-custom">
                 {% for message in messages %}
                     <p>{{ message }}</p>
                 {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Вывод ошибок формы -->
+        {% if form.errors %}
+            <div class="alert alert-danger-custom">
+                <ul>
+                    {% for field in form %}
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
             </div>
         {% endif %}
 
