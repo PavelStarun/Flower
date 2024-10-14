@@ -25,6 +25,7 @@ class UserRegisterView(CreateView):
 
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'
+    form_class = CustomAuthenticationForm
     redirect_authenticated_user = True
 
     def form_invalid(self, form):

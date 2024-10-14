@@ -58,17 +58,17 @@ class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
         label="Логин",
         widget=forms.TextInput(attrs={
-            'placeholder': 'Введите логин',
+            'placeholder': 'Введите логин',  # Placeholder для логина
             'class': 'form-control',
-            'autocomplete': 'new-password'  # отключаем автозаполнение
+            'autocomplete': 'off'
         })
     )
     password = forms.CharField(
         label="Пароль",
         widget=forms.PasswordInput(attrs={
-            'placeholder': 'Введите пароль',
+            'placeholder': 'Введите пароль',  # Placeholder для пароля
             'class': 'form-control',
-            'autocomplete': 'new-password'  # отключаем автозаполнение
+            'autocomplete': 'off'
         })
     )
 
