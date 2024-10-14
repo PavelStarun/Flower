@@ -4,21 +4,36 @@
 <div class="container">
     <h2>Вход</h2>
 
+    <!-- Отображение ошибок -->
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for field in form %}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
     <!-- Форма входа -->
     <form method="POST" autocomplete="off">
         {% csrf_token %}
 
-        <!-- Поле Логин -->
+        <!-- Поле для ввода логина -->
         <div class="mb-3">
             <label for="id_username" class="form-label">Логин</label>
-            <input type="text" name="username" class="form-control" id="id_username" style="background-color: #e0f7fa; width: 250px;" autocomplete="new-password">
+            <input type="text" name="username" class="form-control" id="id_username" placeholder="Введите логин" value="{{ form.username.value|default_if_none:'' }}" style="width: 250px; background-color: #e6f7ff;" autocomplete="off">
         </div>
 
-        <!-- Поле Пароль с глазиком -->
+        <!-- Поле для ввода пароля с глазиком -->
         <div class="mb-3">
             <label for="id_password" class="form-label">Пароль</label>
             <div class="input-group" style="width: 250px;">
-                <input type="password" name="password" class="form-control" id="id_password" style="background-color: #e0f7fa;" autocomplete="new-password">
+                <input type="password" name="password" class="form-control" id="id_password" placeholder="Введите пароль" style="background-color: #e6f7ff;" autocomplete="off">
                 <button type="button" class="btn btn-outline-secondary" id="togglePassword">
                     <i class="fa fa-eye"></i>
                 </button>
@@ -44,4 +59,7 @@
         }
     });
 </script>
+
+<!-- Подключение иконок FontAwesome для глазика -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 {% endblock %}

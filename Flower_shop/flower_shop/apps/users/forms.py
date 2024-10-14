@@ -4,44 +4,49 @@ from django.contrib.auth.models import User
 from .models import Profile
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
+from django.forms import ModelForm
 
 
-class CustomUserCreationForm(UserCreationForm):
+
+class CustomUserCreationForm(forms.ModelForm):
     username = forms.CharField(
         label="Логин",
-        min_length=3,
-        max_length=30,
-        required=True,
-        validators=[MinLengthValidator(3)],
         widget=forms.TextInput(attrs={
+            'placeholder': 'Введите логин',  # Добавляем подсказку
             'class': 'form-control',
             'autocomplete': 'off',
-            'placeholder': 'Введите логин',
-            'style': 'width: 250px;',  # Установка ширины логина
+            'value': ''  # Оставляем поле пустым по умолчанию
         }),
+        validators=[MinLengthValidator(3, "Логин должен содержать не менее 3 символов.")]
     )
     password1 = forms.CharField(
         label="Пароль",
         widget=forms.PasswordInput(attrs={
+            'placeholder': 'Введите пароль',  # Добавляем подсказку
             'class': 'form-control',
-            'autocomplete': 'off',
-            'placeholder': 'Введите пароль',
-            'style': 'width: 250px;',  # Установка ширины пароля
-        }),
+            'autocomplete': 'new-password'  # Отключаем автозаполнение
+        })
     )
     password2 = forms.CharField(
         label="Повторите пароль",
         widget=forms.PasswordInput(attrs={
+            'placeholder': 'Повторите пароль',  # Добавляем подсказку
             'class': 'form-control',
-            'autocomplete': 'off',
-            'placeholder': 'Повторите пароль',
-            'style': 'width: 250px;',  # Установка ширины подтверждения пароля
-        }),
+            'autocomplete': 'new-password'  # Отключаем автозаполнение
+        })
     )
 
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2']
+        fields = ['username']
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+
+        if password1 and password2 and password1 != password2:
+            raise ValidationError("Пароли не совпадают.")
+        return password2
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -52,11 +57,19 @@ class CustomUserCreationForm(UserCreationForm):
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
         label="Логин",
-        widget=forms.TextInput(attrs={'class': 'form-control', 'autocomplete': 'off'})
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Введите логин',
+            'class': 'form-control',
+            'autocomplete': 'new-password'  # отключаем автозаполнение
+        })
     )
     password = forms.CharField(
         label="Пароль",
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'autocomplete': 'off'})
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Введите пароль',
+            'class': 'form-control',
+            'autocomplete': 'new-password'  # отключаем автозаполнение
+        })
     )
 
 class UserProfileForm(forms.ModelForm):

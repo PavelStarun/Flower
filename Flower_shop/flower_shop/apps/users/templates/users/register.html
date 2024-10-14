@@ -1,39 +1,60 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container">
     <h2>Регистрация</h2>
-
-    <!-- Форма регистрации -->
     <form method="POST" autocomplete="off">
         {% csrf_token %}
 
-        <!-- Поле Логин -->
+        <!-- Логин -->
         <div class="mb-3">
             <label for="id_username" class="form-label">Логин</label>
-            <input type="text" name="username" class="form-control" id="id_username" style="background-color: #e0f7fa; width: 250px;" autocomplete="new-password">
+            <input type="text" name="username" class="form-control" id="id_username"
+                   placeholder="Введите логин"
+                   value="{{ form.username.value|default_if_none:'' }}"
+                   style="width: 250px; background-color: #e6f7ff;" autocomplete="off">
+            {% if form.username.errors %}
+                <div class="text-danger">
+                    {{ form.username.errors.as_text }}
+                </div>
+            {% endif %}
         </div>
 
-        <!-- Поле Пароль с глазиком -->
+        <!-- Пароль -->
         <div class="mb-3">
             <label for="id_password1" class="form-label">Пароль</label>
             <div class="input-group" style="width: 250px;">
-                <input type="password" name="password1" class="form-control" id="id_password1" style="background-color: #e0f7fa;" autocomplete="new-password">
+                <input type="password" name="password1" class="form-control" id="id_password1"
+                       placeholder="Введите пароль"
+                       value="{{ form.password1.value|default_if_none:'' }}"
+                       style="background-color: #e6f7ff;" autocomplete="new-password">
                 <button type="button" class="btn btn-outline-secondary" id="togglePassword1">
                     <i class="fa fa-eye"></i>
                 </button>
             </div>
+            {% if form.password1.errors %}
+                <div class="text-danger">
+                    {{ form.password1.errors.as_text }}
+                </div>
+            {% endif %}
         </div>
 
-        <!-- Поле Повторите пароль с глазиком -->
+        <!-- Повторите пароль -->
         <div class="mb-3">
             <label for="id_password2" class="form-label">Повторите пароль</label>
             <div class="input-group" style="width: 250px;">
-                <input type="password" name="password2" class="form-control" id="id_password2" style="background-color: #e0f7fa;" autocomplete="new-password">
+                <input type="password" name="password2" class="form-control" id="id_password2"
+                       placeholder="Повторите пароль"
+                       value="{{ form.password2.value|default_if_none:'' }}"
+                       style="background-color: #e6f7ff;" autocomplete="new-password">
                 <button type="button" class="btn btn-outline-secondary" id="togglePassword2">
                     <i class="fa fa-eye"></i>
                 </button>
             </div>
+            {% if form.password2.errors %}
+                <div class="text-danger">
+                    {{ form.password2.errors.as_text }}
+                </div>
+            {% endif %}
         </div>
 
         <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
