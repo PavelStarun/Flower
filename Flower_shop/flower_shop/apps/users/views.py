@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.utils import IntegrityError
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.utils.text import slugify
+from django.contrib.auth.hashers import check_password
 
 
 class UserRegisterView(CreateView):
@@ -29,21 +31,34 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user = True
 
     def form_invalid(self, form):
-        messages.error(self.request, 'Неверный логин или пароль.')
+        messages.error(self.request, 'Введен неверный логин или пароль.')
         return self.render_to_response(self.get_context_data(form=form))
 
     def form_valid(self, form):
-        username = form.cleaned_data.get('username')
+        username = form.cleaned_data.get('username').lower()
         password = form.cleaned_data.get('password')
-        user = authenticate(self.request, username=username, password=password)
 
-        if user is not None:
-            login(self.request, user)
-            messages.success(self.request, 'Вы успешно вошли!')
-            return redirect('shop-index')
-        else:
+        try:
+            user = User.objects.get(username__iexact=username)
+            if user and check_password(password, user.password):
+                login(self.request, user)
+                messages.success(self.request, 'Вы успешно вошли!')
+                return redirect('shop-index')
+            else:
+                messages.error(self.request, 'Неверный логин или пароль.')
+        except User.DoesNotExist:
             messages.error(self.request, 'Неверный логин или пароль.')
-            return self.form_invalid(form)
+
+        return self.form_invalid(form)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if 'data' in kwargs:
+            data = kwargs['data'].copy()
+            if 'username' in data:
+                data['username'] = data['username'].lower()  # Приведение логина к нижнему регистру при передаче данных в форму
+            kwargs['data'] = data
+        return kwargs
 
 
 @login_required

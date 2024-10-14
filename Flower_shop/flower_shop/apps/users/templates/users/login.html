@@ -1,6 +1,4 @@
 {% extends "base.html" %}
-{% block title %}Вход{% endblock %}
-
 {% block content %}
 <div class="container">
     <h2>Вход</h2>
@@ -10,10 +8,12 @@
         <!-- Логин -->
         <div class="mb-3">
             <label for="id_username" class="form-label">Логин</label>
-            <input type="text" name="username" class="form-control" id="id_username" value="{{ form.username.value|default_if_none:'' }}" placeholder="Введите логин" style="background-color: #e6f7ff; width: 250px;" autocomplete="off">
+            <input type="text" name="username" class="form-control" id="id_username" placeholder="Введите логин" value="{{ form.username.value|default_if_none:'' }}" style="width: 250px; background-color: #e6f7ff;" autocomplete="off">
             {% if form.username.errors %}
                 <div class="text-danger">
-                    {{ form.username.errors.as_text }}
+                    {% for error in form.username.errors %}
+                        <p class="mb-0">* {{ error }}</p>
+                    {% endfor %}
                 </div>
             {% endif %}
         </div>
@@ -29,10 +29,20 @@
             </div>
             {% if form.password.errors %}
                 <div class="text-danger">
-                    {{ form.password.errors.as_text }}
+                    {% for error in form.password.errors %}
+                        <p class="mb-0">* {{ error }}</p>
+                    {% endfor %}
                 </div>
             {% endif %}
         </div>
+
+        {% if form.non_field_errors %}
+            <div class="text-danger">
+                {% for error in form.non_field_errors %}
+                    <p class="mb-0">* Введен неверный логин или пароль.</p>
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <button type="submit" class="btn btn-primary">Войти</button>
     </form>
@@ -44,9 +54,16 @@
     const passwordField = document.getElementById('id_password');
 
     togglePassword.addEventListener('click', function () {
-        const type = passwordField.type === 'password' ? 'text' : 'password';
-        passwordField.type = type;
-        this.innerHTML = type === 'password' ? '<i class="fa fa-eye"></i>' : '<i class="fa fa-eye-slash"></i>';
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            togglePassword.innerHTML = '<i class="fa fa-eye-slash"></i>';
+        } else {
+            passwordField.type = 'password';
+            togglePassword.innerHTML = '<i class="fa fa-eye"></i>';
+        }
     });
 </script>
+
+<!-- Подключаем иконки FontAwesome для глазика -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 {% endblock %}

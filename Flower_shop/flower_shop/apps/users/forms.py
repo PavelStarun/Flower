@@ -12,27 +12,27 @@ class CustomUserCreationForm(forms.ModelForm):
     username = forms.CharField(
         label="Логин",
         widget=forms.TextInput(attrs={
-            'placeholder': 'Введите логин',  # Добавляем подсказку
+            'placeholder': 'Введите логин',
             'class': 'form-control',
             'autocomplete': 'off',
-            'value': ''  # Оставляем поле пустым по умолчанию
+            'value': ''
         }),
         validators=[MinLengthValidator(3, "Логин должен содержать не менее 3 символов.")]
     )
     password1 = forms.CharField(
         label="Пароль",
         widget=forms.PasswordInput(attrs={
-            'placeholder': 'Введите пароль',  # Добавляем подсказку
+            'placeholder': 'Введите пароль',
             'class': 'form-control',
-            'autocomplete': 'new-password'  # Отключаем автозаполнение
+            'autocomplete': 'new-password'
         })
     )
     password2 = forms.CharField(
         label="Повторите пароль",
         widget=forms.PasswordInput(attrs={
-            'placeholder': 'Повторите пароль',  # Добавляем подсказку
+            'placeholder': 'Повторите пароль',
             'class': 'form-control',
-            'autocomplete': 'new-password'  # Отключаем автозаполнение
+            'autocomplete': 'new-password'
         })
     )
 
@@ -49,8 +49,8 @@ class CustomUserCreationForm(forms.ModelForm):
         return password2
 
     def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if User.objects.filter(username=username).exists():
+        username = self.cleaned_data.get('username').lower()
+        if User.objects.filter(username__iexact=username).exists():
             raise ValidationError("Пользователь с таким логином уже существует.")
         return username
 
@@ -58,7 +58,7 @@ class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
         label="Логин",
         widget=forms.TextInput(attrs={
-            'placeholder': 'Введите логин',  # Placeholder для логина
+            'placeholder': 'Введите логин',
             'class': 'form-control',
             'autocomplete': 'off'
         })
@@ -66,7 +66,7 @@ class CustomAuthenticationForm(AuthenticationForm):
     password = forms.CharField(
         label="Пароль",
         widget=forms.PasswordInput(attrs={
-            'placeholder': 'Введите пароль',  # Placeholder для пароля
+            'placeholder': 'Введите пароль',
             'class': 'form-control',
             'autocomplete': 'off'
         })
