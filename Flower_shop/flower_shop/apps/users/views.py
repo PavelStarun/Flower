@@ -38,25 +38,21 @@ class CustomLoginView(LoginView):
         username = form.cleaned_data.get('username').lower()
         password = form.cleaned_data.get('password')
 
-        try:
-            user = User.objects.get(username__iexact=username)
-            if user and check_password(password, user.password):
-                login(self.request, user)
-                messages.success(self.request, 'Вы успешно вошли!')
-                return redirect('shop-index')
-            else:
-                messages.error(self.request, 'Неверный логин или пароль.')
-        except User.DoesNotExist:
+        user = authenticate(self.request, username=username, password=password)
+        if user is not None:
+            login(self.request, user)
+            messages.success(self.request, 'Вы успешно вошли!')
+            return redirect('shop-index')
+        else:
             messages.error(self.request, 'Неверный логин или пароль.')
-
-        return self.form_invalid(form)
+            return self.form_invalid(form)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         if 'data' in kwargs:
             data = kwargs['data'].copy()
             if 'username' in data:
-                data['username'] = data['username'].lower()  # Приведение логина к нижнему регистру при передаче данных в форму
+                data['username'] = data['username'].lower()  # Приведение логина к нижнему регистру
             kwargs['data'] = data
         return kwargs
 
